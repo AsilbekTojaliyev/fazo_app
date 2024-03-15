@@ -9,7 +9,7 @@ def get_laptop(price, country, year, display, rom_type,
                rom_size, ram_size, processor, videocard, brand, page, limit, db):
     if brand:
         brand_formatted = "%{}%".format(brand)
-        brand_filter = (Laptops.brand.like(brand_formatted))
+        brand_filter = Laptops.brand.like(brand_formatted)
     else:
         brand_filter = Laptops.id > 0
 

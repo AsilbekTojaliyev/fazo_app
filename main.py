@@ -12,6 +12,7 @@ from routes.category import router_category
 from routes.cart import router_carts
 from routes.like import router_likes
 from routes.buy import router_buy
+from routes.incomit import router_incomes
 
 app = FastAPI(docs_url="/")
 
@@ -25,6 +26,7 @@ app.include_router(router_files)
 app.include_router(router_likes)
 app.include_router(router_carts)
 app.include_router(router_buy)
+app.include_router(router_incomes)
 
 app.add_middleware(
     CORSMiddleware,

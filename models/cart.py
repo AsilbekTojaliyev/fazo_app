@@ -13,7 +13,8 @@ class Carts(Base):
     source = Column(String(255), nullable=False)
     source_id = Column(Integer, nullable=False)
     amount = Column(Integer, nullable=False)
-    
+    price_source = Column(Integer, nullable=False)
+
     laptop = relationship(argument="Laptops", foreign_keys=[source_id],
                           primaryjoin=lambda: and_(Laptops.id == Carts.source_id, Carts.source == "laptop"),
                           backref=backref("carts"))

@@ -14,6 +14,14 @@ router_carts = APIRouter(
 )
 
 
+@router_carts.get("/get_carts_all")
+def get_all(db: Session = Depends(database), current_user: CreateUser = Depends(get_current_user)):
+    if current_user.role == "admin":
+        return db.query(Carts).all()
+    else:
+        raise HTTPException(400, "siz buni ko'ra olmaysiz, chunki siz admin emassiz")
+    
+
 @router_carts.get("/get_carts")
 def get(db: Session = Depends(database), current_user: CreateUser = Depends(get_current_user)):
     buy = db.query(Buys).filter(Buys.user_id == current_user.id).first()
