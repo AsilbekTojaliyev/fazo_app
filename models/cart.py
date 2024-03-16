@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, and_
+from sqlalchemy import Column, Integer, Numeric, String, and_
 from sqlalchemy.orm import relationship, backref
 from db_connect import Base
 from models.laptop import Laptops
@@ -13,7 +13,7 @@ class Carts(Base):
     source = Column(String(255), nullable=False)
     source_id = Column(Integer, nullable=False)
     amount = Column(Integer, nullable=False)
-    price_source = Column(Integer, nullable=False)
+    price_source = Column(Numeric, nullable=False)
 
     laptop = relationship(argument="Laptops", foreign_keys=[source_id],
                           primaryjoin=lambda: and_(Laptops.id == Carts.source_id, Carts.source == "laptop"),

@@ -4,9 +4,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from routes.user import users_router
 from routes.login import login_router
-from routes.telephone import router_phone
-from routes.planshet import router_planshet
-from routes.laptop import router_laptop
+from routes.telephone import router_phones
+from routes.planshet import router_planshets
+from routes.laptop import router_laptops
 from routes.file import router_files
 from routes.category import router_category
 from routes.cart import router_carts
@@ -19,9 +19,9 @@ app = FastAPI(docs_url="/")
 app.include_router(login_router)
 app.include_router(users_router)
 app.include_router(router_category)
-app.include_router(router_laptop)
-app.include_router(router_planshet)
-app.include_router(router_phone)
+app.include_router(router_laptops)
+app.include_router(router_planshets)
+app.include_router(router_phones)
 app.include_router(router_files)
 app.include_router(router_likes)
 app.include_router(router_carts)

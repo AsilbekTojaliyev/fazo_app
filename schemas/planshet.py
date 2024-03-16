@@ -11,7 +11,7 @@ class Create_planshet(BaseModel):
     year: int = Field(..., gt=0)
     weight: float
     country: str
-    price: int = Field(..., gt=0)
+    price: float = Field(..., gt=0)
     ram_size: int = Field(..., gt=0)
     rom_size: int = Field(..., gt=0)
     display: float
@@ -31,7 +31,7 @@ class Update_planshet(BaseModel):
     year: int = Field(..., gt=0)
     weight: float
     country: str
-    price: int = Field(..., gt=0)
+    price: float = Field(..., gt=0)
     ram_size: int = Field(..., gt=0)
     rom_size: int = Field(..., gt=0)
     color: str

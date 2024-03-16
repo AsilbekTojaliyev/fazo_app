@@ -4,8 +4,6 @@ from models.cart import Carts
 from models.laptop import Laptops
 from models.planshet import Planshets
 from models.telephone import Telephones
-# (cart.source == "planshet" and db.query(Planshets).filter(Planshets.id == cart.source_id).first() is not None) or \
-#             (cart.source == "telephone" and db.query(Telephones).filter(Telephones.id == cart.source_id).first() is not None):
 
 
 def product_reduction(cart, db):

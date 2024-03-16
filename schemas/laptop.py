@@ -5,15 +5,15 @@ from datetime import date
 class Create_laptop(BaseModel):
     category_id: int = Field(..., gt=0)
     name: str
-    price: int = Field(..., gt=0)
+    price: float
     year: int = Field(..., gt=0)
     brand: str
     screen_type: str
     weight: float
     country: str
     color: str
-    ram_size: int = Field(..., gt=0)
-    rom_size: int = Field(..., gt=0)
+    ram_size: int
+    rom_size: int
     display: float
     videocard: str
     rom_type: str
@@ -27,15 +27,15 @@ class Update_laptop(BaseModel):
     ident: int = Field(..., gt=0)
     category_id: int = Field(..., gt=0)
     name: str
-    price: int = Field(..., gt=0)
+    price: float
     year: int = Field(..., gt=0)
     brand: str
     screen_type: str
     weight: float
     country: str
     color: str
-    ram_size: int = Field(..., gt=0)
-    rom_size: int = Field(..., gt=0)
+    ram_size: int
+    rom_size: int
     display: float
     videocard: str
     rom_type: str

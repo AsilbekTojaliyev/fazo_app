@@ -1,18 +1,19 @@
 from sqlalchemy.orm import Session, joinedload
 from fastapi import APIRouter, Depends, HTTPException
 from db_connect import database
+from functions.universal_functions import pagination
 from models.laptop import Laptops
 from typing import List
 from routes.login import get_current_active_user
 from schemas.laptop import Create_laptop, Update_laptop
 from functions.laptop import create_laptop, update_laptop, delete_laptop, get_laptop
 from schemas.user import CreateUser
-from sqlalchemy.sql.expression import func
+from sqlalchemy import func
 
-router_laptop = APIRouter(prefix="/Laptops", tags=["laptops operations"])
+router_laptops = APIRouter(prefix="/Laptops", tags=["laptops operations"])
 
 
-@router_laptop.post('/create_laptops')
+@router_laptops.post('/create_laptops')
 def create(forms: List[Create_laptop],
            db: Session = Depends(database),
            current_user: CreateUser = Depends(get_current_active_user)):
@@ -20,20 +21,20 @@ def create(forms: List[Create_laptop],
     raise HTTPException(200, "Amaliyot muvaffaqiyatli amalga oshirildi !!!")
 
 
-@router_laptop.get("/get_random_laptop")
-def get_random_all(db: Session = Depends(database)):
-    return db.query(Laptops).options(joinedload(Laptops.files)).order_by(func.random()).all()
+@router_laptops.get("/get_random_laptops")
+def get_random_all(page: int = 1, limit: int = 25, db: Session = Depends(database)):
+    items = db.query(Laptops).options(joinedload(Laptops.files)).order_by(func.random())
+    return pagination(items, page, limit)
 
 
-@router_laptop.get('/get_laptops')
-def get_filter(page: int = 1, limit: int = 25, rom_size: int = 0, year: int = 0,
-               ram_size: int = 0, rom_type: str = None, price: int = 0, display: float = 0,
-               processor: str = None, videocard: str = None, brand: str = None,
+@router_laptops.get('/get_filter_laptops')
+def get_filter(page: int = 1, limit: int = 25, rom_size: int = 0,
+               ram_size: int = 0, rom_type: str = None, price: float = 0, brand: str = None,
                country: str = None, db: Session = Depends(database)):
-    return get_laptop(price, country, year, display, rom_type, rom_size, ram_size, processor, videocard, brand, page, limit, db)
+    return get_laptop(price, country, rom_type, rom_size, ram_size,  brand, page, limit, db)
 
 
-@router_laptop.put('/update_laptops')
+@router_laptops.put('/update_laptops')
 def update(forms: List[Update_laptop],
            db: Session = Depends(database),
            current_user: CreateUser = Depends(get_current_active_user)):
@@ -41,7 +42,7 @@ def update(forms: List[Update_laptop],
     raise HTTPException(200, "Amaliyot muvaffaqiyatli amalga oshirildi !!!")
 
 
-@router_laptop.delete('/delete_laptops')
+@router_laptops.delete('/delete_laptops')
 def delete(idents: List[int],
            db: Session = Depends(database),
            current_user: CreateUser = Depends(get_current_active_user)):

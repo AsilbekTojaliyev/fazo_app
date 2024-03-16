@@ -14,7 +14,7 @@ router_carts = APIRouter(
 )
 
 
-@router_carts.get("/get_carts_all")
+@router_carts.get("/get_all_carts")
 def get_all(db: Session = Depends(database), current_user: CreateUser = Depends(get_current_user)):
     if current_user.role == "admin":
         return db.query(Carts).all()
@@ -37,7 +37,7 @@ def create(form: Create_cart = Depends(Create_cart), db: Session = Depends(datab
     raise HTTPException(200, "Amaliyot muvaffaqiyatli amalga oshirildi")
 
 
-@router_carts.delete("/delete_cart")
+@router_carts.delete("/delete_carts")
 def delete(ident: int = 0, db: Session = Depends(database),
            current_user: CreateUser = Depends(get_current_user)):
     delete_cart(ident, current_user, db)

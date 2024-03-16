@@ -9,7 +9,7 @@ from models.incomit import Incomes
 from routes.login import get_current_user
 from schemas.user import CreateUser
 
-router_buy = APIRouter(prefix="/buys", tags=["buys, operations"])
+router_buy = APIRouter(prefix="/buys", tags=["Buys, operations"])
 
 
 @router_buy.get("get_buys")

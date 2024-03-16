@@ -1,32 +1,18 @@
 from fastapi import HTTPException
+from sqlalchemy import func
 from sqlalchemy.orm import joinedload
 from functions.universal_functions import get_in_db, new_item_db, pagination
 from models.category import Categories
 from models.telephone import Telephones
 
 
-def get_telephone(model, country, price, year, battery, rom_size, ram_size, camera, brand, page, limit, db):
-    if model:
-        model_formatted = "%{}%".format(model)
-        model_filter = Telephones.model.like(model_formatted)
-    else:
-        model_filter = Telephones.id > 0
+def get_telephone(country, price, rom_size, ram_size, brand, page, limit, db):
 
     if country:
         country_formatted = "%{}%".format(country)
         country_filter = Telephones.country.like(country_formatted)
     else:
         country_filter = Telephones.id > 0
-
-    if year > 0:
-        year_filter = Telephones.year >= year
-    else:
-        year_filter = Telephones.id > 0
-
-    if battery > 0:
-        battery_filter = Telephones.battery >= battery
-    else:
-        battery_filter = Telephones.id > 0
 
     if price > 0:
         price_filter = Telephones.price <= price
@@ -39,11 +25,6 @@ def get_telephone(model, country, price, year, battery, rom_size, ram_size, came
     else:
         brand_filter = Telephones.id > 0
 
-    if camera > 0:
-        camera_filter = Telephones.camera == camera
-    else:
-        camera_filter = Telephones.id > 0
-
     if rom_size > 0:
         rom_size_filter = Telephones.rom_size == rom_size
     else:
@@ -54,10 +35,10 @@ def get_telephone(model, country, price, year, battery, rom_size, ram_size, came
     else:
         ram_size_filter = Telephones.id > 0
 
-    items = (db.query(Telephones).options(joinedload(Telephones.files)).filter(
-        brand_filter, camera_filter, ram_size_filter, model_filter,
-        rom_size_filter, country_filter, year_filter,
-        price_filter, battery_filter).order_by(Telephones.id))
+    items = db.query(Telephones).options(joinedload(Telephones.files)).filter(
+        brand_filter, ram_size_filter,
+        rom_size_filter, country_filter,
+        price_filter).order_by(func.random())
 
     return pagination(items, page, limit)
 
@@ -84,7 +65,7 @@ def create_phone(db, forms, user):
                 camera=form.camera,
                 self_camera=form.self_camera,
                 discount=form.discount,
-                discount_price=int(discount_price),
+                discount_price=discount_price,
                 discount_time=form.discount_time,
                 count=form.count
             )
@@ -116,7 +97,7 @@ def update_phone(db, forms, user):
                 Telephones.self_camera: form.self_camera,
                 Telephones.battery: form.battery,
                 Telephones.discount: form.discount,
-                Telephones.discount_price: int(discount_price),
+                Telephones.discount_price: discount_price,
                 Telephones.discount_time: form.discount_time,
                 Telephones.count: form.count
             })

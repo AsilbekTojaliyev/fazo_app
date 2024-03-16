@@ -1,11 +1,12 @@
 from fastapi import HTTPException
+from sqlalchemy import func
 from sqlalchemy.orm import joinedload
 from functions.universal_functions import get_in_db, new_item_db, pagination
 from models.category import Categories
 from models.planshet import Planshets
 
 
-def get_planshet(price, country, year, display, rom_size, ram_size, camera, brand, page, limit, db):
+def get_planshet(price, country, rom_size, ram_size, brand, page, limit, db):
     if country:
         country_formatted = "%{}%".format(country)
         country_filter = (Planshets.country.like(country_formatted))
@@ -17,26 +18,11 @@ def get_planshet(price, country, year, display, rom_size, ram_size, camera, bran
     else:
         price_filter = Planshets.id > 0
 
-    if year > 0:
-        year_filter = Planshets.year >= year
-    else:
-        year_filter = Planshets.id > 0
-
-    if display > 0:
-        display_filter = Planshets.display <= display
-    else:
-        display_filter = Planshets.id > 0
-
     if brand:
         brand_formatted = "%{}%".format(brand)
         brand_filter = (Planshets.brand.like(brand_formatted))
     else:
         brand_filter = Planshets.id > 0
-
-    if camera > 0:
-        camera_filter = Planshets.camera == camera
-    else:
-        camera_filter = Planshets.id > 0
 
     if rom_size > 0:
         rom_size_filter = Planshets.rom_size == rom_size
@@ -48,9 +34,9 @@ def get_planshet(price, country, year, display, rom_size, ram_size, camera, bran
     else:
         ram_size_filter = Planshets.id > 0
 
-    items = (db.query(Planshets).options(joinedload(Planshets.files)).filter(
-        brand_filter, camera_filter, country_filter, price_filter, year_filter, display_filter,
-        ram_size_filter, rom_size_filter).order_by(Planshets.id))
+    items = db.query(Planshets).options(joinedload(Planshets.files)).filter(
+        brand_filter, country_filter, price_filter,
+        ram_size_filter, rom_size_filter).order_by(func.random())
 
     return pagination(items, page, limit)
 
@@ -76,7 +62,7 @@ def create_planshet(db, forms, user):
                 camera=form.camera,
                 self_camera=form.self_camera,
                 discount=form.discount,
-                discount_price=int(discount_price),
+                discount_price=discount_price,
                 discount_time=form.discount_time,
                 count=form.count
             )
@@ -107,7 +93,7 @@ def update_planshet(db, forms, user):
                 Planshets.camera: form.camera,
                 Planshets.self_camera: form.self_camera,
                 Planshets.discount: form.discount,
-                Planshets.discount_price: int(discount_price),
+                Planshets.discount_price: discount_price,
                 Planshets.discount_time: form.discount_time,
                 Planshets.count: form.count
             })

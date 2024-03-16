@@ -1,12 +1,12 @@
 from fastapi import HTTPException
+from sqlalchemy import func
 from sqlalchemy.orm import joinedload
 from functions.universal_functions import get_in_db, new_item_db, pagination
 from models.category import Categories
 from models.laptop import Laptops
 
 
-def get_laptop(price, country, year, display, rom_type,
-               rom_size, ram_size, processor, videocard, brand, page, limit, db):
+def get_laptop(price, country, rom_type, rom_size, ram_size,  brand, page, limit, db):
     if brand:
         brand_formatted = "%{}%".format(brand)
         brand_filter = Laptops.brand.like(brand_formatted)
@@ -20,37 +20,15 @@ def get_laptop(price, country, year, display, rom_type,
         country_filter = Laptops.id > 0
 
     if price > 0:
-        price_filter = Laptops.price <= price
+        price_filter = Laptops.discount_price <= price
     else:
         price_filter = Laptops.id > 0
-
-    if year > 0:
-        year_filter = Laptops.year >= year
-    else:
-        year_filter = Laptops.id > 0
-
-    if display > 0:
-        display_filter = Laptops.display <= display
-    else:
-        display_filter = Laptops.id > 0
 
     if rom_type:
         rom_formatted = "%{}%".format(rom_type)
         rom_type_filter = (Laptops.rom_type.like(rom_formatted))
     else:
         rom_type_filter = Laptops.id > 0
-
-    if processor:
-        processor_formatted = "%{}%".format(processor)
-        processor_filter = (Laptops.processor.like(processor_formatted))
-    else:
-        processor_filter = Laptops.id > 0
-
-    if videocard:
-        videocard_formatted = "%{}%".format(videocard)
-        videocard_filter = (Laptops.videocard.like(videocard_formatted))
-    else:
-        videocard_filter = Laptops.id > 0
 
     if rom_size > 0:
         rom_size_filter = Laptops.rom_size == rom_size
@@ -62,10 +40,9 @@ def get_laptop(price, country, year, display, rom_type,
     else:
         ram_size_filter = Laptops.id > 0
 
-    items = (db.query(Laptops).options(joinedload(Laptops.files)).filter(
-        brand_filter, rom_type_filter, processor_filter, videocard_filter, display_filter,
-        price_filter, ram_size_filter, country_filter, year_filter,
-        rom_size_filter).order_by(Laptops.id.desc()))
+    items = db.query(Laptops).options(joinedload(Laptops.files)).filter(
+        brand_filter, rom_type_filter, price_filter, ram_size_filter,
+        country_filter, rom_size_filter).order_by(func.random())
 
     return pagination(items, page, limit)
 
@@ -92,7 +69,7 @@ def create_laptop(db, forms, user):
                 processor=form.processor,
                 rom_type=form.rom_type,
                 discount=form.discount,
-                discount_price=int(discount_price),
+                discount_price=discount_price,
                 count=form.count,
                 discount_time=form.discount_time
             )
@@ -124,7 +101,7 @@ def update_laptop(db, forms, user):
                 Laptops.videocard: form.videocard,
                 Laptops.rom_type: form.rom_type,
                 Laptops.discount: form.discount,
-                Laptops.discount_price: int(discount_price),
+                Laptops.discount_price: discount_price,
                 Laptops.count: form.count,
                 Laptops.discount_time: form.discount_time
             })

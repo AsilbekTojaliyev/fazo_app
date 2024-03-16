@@ -7,7 +7,8 @@ def create_category(db, forms, user):
     if user.role == "admin":
         for form in forms:
             new_db = Categories(
-                name=form.name
+                name=form.name,
+                link=None
             )
             new_item_db(db, new_db)
     else:

@@ -10,11 +10,11 @@ class CreateUser(BaseModel):
     name: str
     username: str
     password: str
-    phone_number: str
+    phone_number: float
 
     @validator('phone_number')
     def number_validate(cls, num):
-        if len(num) < 9:
+        if len(str(num)) < 9:
             raise HTTPException(400, "telefon raqam 9 ta belgidan kam bo'lmasligi kerak")
         return num
 
@@ -39,11 +39,11 @@ class UpdateUser(BaseModel):
     name: str
     username: str
     password: str
-    phone_number: str
+    phone_number: float
 
     @validator('phone_number')
     def number_validate(cls, num):
-        if len(num) < 9:
+        if len(str(num)) < 9:
             raise HTTPException(400, "telefon raqam 9 ta belgidan kam bo'lmasligi kerak")
         return num
 

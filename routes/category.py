@@ -1,4 +1,5 @@
 import random
+from math import ceil
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import func
@@ -19,6 +20,16 @@ router_category = APIRouter(
 )
 
 
+def pagination(form, page, limit):
+    if page < 0 or limit < 0:
+        raise HTTPException(status_code=400, detail="page yoki limit 0 dan kichik kiritilmasligi kerak")
+    elif page and limit:
+        return {"current_page": page, "limit": limit, "pages": ceil(len(form) / limit),
+                "data": form[(page - 1) * limit:page * limit]}
+    else:
+        return {"data": form}
+
+
 @router_category.post("/create_categories")
 def create(forms: List[Create_category], db: Session = Depends(database),
            current_user: CreateUser = Depends(get_current_user)):
@@ -28,17 +39,25 @@ def create(forms: List[Create_category], db: Session = Depends(database),
 
 @router_category.get("/get_categories")
 def get(db: Session = Depends(database)):
-    return db.query(Categories).all()
+    categories = db.query(Categories).all()
+    for category in categories:
+        if category.name == "kompyuterlar":
+            category.link = "/Laptops/get_filter_laptops"
+        if category.name == "planshetlar":
+            category.link = "/Planshets/get_filter_planshets"
+        if category.name == "telefonlar":
+            category.link = "/Phones/get_filter_phones"
+    return categories
 
 
 @router_category.get("/get_all_source")
-def get_all_source(db: Session = Depends(database)):
+def get_all_source(page: int = 1, limit: int = 25, db: Session = Depends(database)):
     laptops = db.query(Laptops).options(joinedload(Laptops.files)).order_by(func.random()).all()
     planshets = db.query(Planshets).options(joinedload(Planshets.files)).order_by(func.random()).all()
     phones = db.query(Telephones).options(joinedload(Telephones.files)).order_by(func.random()).all()
     items = laptops + planshets + phones
     random.shuffle(items)
-    return items
+    return pagination(items, page, limit)
 
 
 @router_category.put("/update_categories")

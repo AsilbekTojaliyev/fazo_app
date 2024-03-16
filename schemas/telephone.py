@@ -8,7 +8,7 @@ class Create_phone(BaseModel):
     year: int = Field(..., gt=0)
     weight: float
     country: str
-    price: int = Field(..., gt=0)
+    price: float = Field(..., gt=0)
     brand: str
     model: str
     ram_size: int = Field(..., gt=0)
@@ -29,7 +29,7 @@ class Update_phone(BaseModel):
     year: int = Field(..., gt=0)
     weight: float
     country: str
-    price: int = Field(..., gt=0)
+    price: float = Field(..., gt=0)
     brand: str
     model: str
     ram_size: int = Field(..., gt=0)
