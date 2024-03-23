@@ -8,6 +8,6 @@ class Users(Base):
     name = Column(String(255), nullable=False)
     username = Column(String(255), nullable=False)
     password = Column(String(255), nullable=False)
-    phone_number = Column(Numeric(12), nullable=False)
+    phone_number = Column(Numeric, nullable=False)
     role = Column(String(255), nullable=False)
     token = Column(String(255), nullable=False)

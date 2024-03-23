@@ -4,13 +4,21 @@ from db_connect import database
 from functions.like import create_like, delete_like
 from models.like import Likes
 from routes.login import get_current_user
-from schemas.like import Create_like
-from schemas.user import CreateUser
+from schemas.likes import Create_like
+from schemas.users import CreateUser
 
 router_likes = APIRouter(
     prefix="/likes",
     tags=["Likes operations"]
 )
+
+
+@router_likes.get("/get_for_admin")
+def get(db: Session = Depends(database), current_user: CreateUser = Depends(get_current_user)):
+    if current_user.role == "admin":
+        return db.query(Likes).all()
+    else:
+        raise HTTPException(400, "sizga mumkin emas")
 
 
 @router_likes.get("/get_likes")

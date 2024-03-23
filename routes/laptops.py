@@ -5,12 +5,12 @@ from functions.universal_functions import pagination
 from models.laptop import Laptops
 from typing import List
 from routes.login import get_current_active_user
-from schemas.laptop import Create_laptop, Update_laptop
+from schemas.laptops import Create_laptop, Update_laptop
 from functions.laptop import create_laptop, update_laptop, delete_laptop, get_laptop
-from schemas.user import CreateUser
+from schemas.users import CreateUser
 from sqlalchemy import func
 
-router_laptops = APIRouter(prefix="/Laptops", tags=["laptops operations"])
+router_laptops = APIRouter(prefix="/Laptops", tags=["Laptops operations"])
 
 
 @router_laptops.post('/create_laptops')
@@ -21,13 +21,7 @@ def create(forms: List[Create_laptop],
     raise HTTPException(200, "Amaliyot muvaffaqiyatli amalga oshirildi !!!")
 
 
-@router_laptops.get("/get_random_laptops")
-def get_random_all(page: int = 1, limit: int = 25, db: Session = Depends(database)):
-    items = db.query(Laptops).options(joinedload(Laptops.files)).order_by(func.random())
-    return pagination(items, page, limit)
-
-
-@router_laptops.get('/get_filter_laptops')
+@router_laptops.get('/get_laptops')
 def get_filter(page: int = 1, limit: int = 25, rom_size: int = 0,
                ram_size: int = 0, rom_type: str = None, price: float = 0, brand: str = None,
                country: str = None, db: Session = Depends(database)):

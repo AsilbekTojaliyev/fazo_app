@@ -2,10 +2,10 @@ from sqlalchemy.orm import Session
 from db_connect import database
 from functions.file import create_file, update_file, delete_file
 from routes.login import get_current_user
-from schemas.file import Create_file
+from schemas.files import Create_file
 from fastapi import APIRouter, Depends, HTTPException
 
-from schemas.user import CreateUser
+from schemas.users import CreateUser
 
 router_files = APIRouter(
     prefix="/files",

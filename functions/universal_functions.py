@@ -2,8 +2,8 @@ import math
 from fastapi import HTTPException
 from models.cart import Carts
 from models.laptop import Laptops
-from models.planshet import Planshets
-from models.telephone import Telephones
+from models.tablet import Tablets
+from models.phone import Phones
 
 
 def product_reduction(cart, db):
@@ -12,14 +12,14 @@ def product_reduction(cart, db):
             Laptops.count: Laptops.count - cart.amount
         })
         db.commit()
-    elif cart.source == "planshet" and db.query(Planshets).filter(Planshets.id == cart.source_id).first() is not None:
-        db.query(Planshets).filter(Planshets.id == cart.source_id).update({
-            Planshets.count: Planshets.count - cart.amount
+    elif cart.source == "planshet" and db.query(Tablets).filter(Tablets.id == cart.source_id).first() is not None:
+        db.query(Tablets).filter(Tablets.id == cart.source_id).update({
+            Tablets.count: Tablets.count - cart.amount
         })
         db.commit()
-    elif cart.source == "telephone" and db.query(Telephones).filter(Telephones.id == cart.source_id).first() is not None:
-        db.query(Telephones).filter(Telephones.id == cart.source_id).update({
-            Telephones.count: Telephones.count - cart.amount
+    elif cart.source == "telephone" and db.query(Phones).filter(Phones.id == cart.source_id).first() is not None:
+        db.query(Phones).filter(Phones.id == cart.source_id).update({
+            Phones.count: Phones.count - cart.amount
         })
         db.commit()
 
@@ -47,6 +47,16 @@ def pagination(form, page, limit):
         return {"data": form.all()}
 
 
+def pagination_search(form, page, limit):
+    if page < 0 or limit < 0:
+        raise HTTPException(status_code=400, detail="page yoki limit 0 dan kichik kiritilmasligi kerak")
+    elif page and limit:
+        return {"current_page": page, "limit": limit, "pages": math.ceil(len(form) / limit),
+                "data": form[(page - 1) * limit:page * limit]}
+    else:
+        return {"data": form}
+
+
 def cart_buy_create(source, source_id, buy, db):
     if source == "laptop" and db.query(Laptops).filter(Laptops.id == source_id).first() is not None:
         x = db.query(Carts).filter(
@@ -67,16 +77,17 @@ def cart_buy_create(source, source_id, buy, db):
                 source=source,
                 source_id=source_id,
                 amount=1,
+                price_one=laptop.discount_price,
                 price_source=laptop.discount_price
             )
             new_item_db(db, new_db)
 
-    elif source == "planshet" and db.query(Planshets).filter(Planshets.id == source_id).first() is not None:
+    elif source == "planshet" and db.query(Tablets).filter(Tablets.id == source_id).first() is not None:
         x = db.query(Carts).filter(
             Carts.buy_id == buy.id,
             Carts.source == source,
             Carts.source_id == source_id).first()
-        planshet = db.query(Planshets).filter(Planshets.id == source_id).first()
+        planshet = db.query(Tablets).filter(Tablets.id == source_id).first()
         if x is not None:
             db.query(Carts).filter(Carts.source_id == source_id, Carts.source == "planshet").update({
                 Carts.amount: Carts.amount + 1,
@@ -89,16 +100,17 @@ def cart_buy_create(source, source_id, buy, db):
                 source=source,
                 source_id=source_id,
                 amount=1,
+                price_one=planshet.discount_price,
                 price_source=planshet.discount_price
             )
             new_item_db(db, new_db)
 
-    elif source == "telephone" and db.query(Telephones).filter(Telephones.id == source_id).first() is not None:
+    elif source == "telephone" and db.query(Phones).filter(Phones.id == source_id).first() is not None:
         x = db.query(Carts).filter(
             Carts.buy_id == buy.id,
             Carts.source == source,
             Carts.source_id == source_id).first()
-        phone = db.query(Telephones).filter(Telephones.id == source_id).first()
+        phone = db.query(Phones).filter(Phones.id == source_id).first()
         if x is not None:
             db.query(Carts).filter(Carts.source_id == source_id, Carts.source == "telephone").update({
                 Carts.amount: Carts.amount + 1,
@@ -111,6 +123,7 @@ def cart_buy_create(source, source_id, buy, db):
                 source=source,
                 source_id=source_id,
                 amount=1,
+                price_one=phone.discount_price,
                 price_source=phone.discount_price
             )
             new_item_db(db, new_db)

@@ -31,7 +31,6 @@ def update_user_f(form, db, user):
             Users.password: get_password_hash(form.password),
             Users.role: "user"
         })
-
         db.commit()
 
     elif user.role == "admin":
@@ -50,7 +49,6 @@ def delete_user_f(db, user):
 
 
 def get_admin(ident, db):
-
     if ident > 0:
         ident_filter = Users.id == ident
     else:
@@ -65,7 +63,6 @@ def create_admin_f(form, db, user):
         new_add = Users(
             name=form.name,
             username=form.username,
-            phone_number=form.phone_number,
             role="admin",
             password=get_password_hash(form.password)
         )

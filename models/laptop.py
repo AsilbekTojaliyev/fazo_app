@@ -20,7 +20,8 @@ class Laptops(Base):
     videocard = Column(String(255), nullable=False)
     rom_type = Column(String(255), nullable=False)
     processor = Column(String(255), nullable=False)
-    discount = Column(Integer, nullable=False)
+    discount = Column(Numeric, nullable=False)
     discount_price = Column(Numeric, nullable=False)
     count = Column(Integer, nullable=False)
     discount_time = Column(Date)
+

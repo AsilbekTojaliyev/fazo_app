@@ -18,7 +18,7 @@ class Create_laptop(BaseModel):
     videocard: str
     rom_type: str
     processor: str
-    discount: int
+    discount: float
     count: int = Field(..., gt=0)
     discount_time: date
 
@@ -40,6 +40,6 @@ class Update_laptop(BaseModel):
     videocard: str
     rom_type: str
     processor: str
-    discount: int
+    discount: float
     count: int = Field(..., gt=0)
     discount_time: date

@@ -5,8 +5,8 @@ from functions.cart import create_cart, delete_cart
 from models.buy import Buys
 from models.cart import Carts
 from routes.login import get_current_user
-from schemas.cart import Create_cart
-from schemas.user import CreateUser
+from schemas.carts import Create_cart
+from schemas.users import CreateUser
 
 router_carts = APIRouter(
     prefix="/carts",

@@ -4,8 +4,8 @@ from pydantic import BaseModel, Field
 
 class Source_type(str, Enum):
     laptop = "laptop"
-    planshet = "planshet"
-    telephone = "telephone"
+    planshet = "tablet"
+    telephone = "phone"
 
 
 class Create_cart(BaseModel):

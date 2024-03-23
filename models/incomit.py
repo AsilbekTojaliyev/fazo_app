@@ -1,5 +1,7 @@
 from sqlalchemy import Column, Integer, Date, Numeric
+from sqlalchemy.orm import relationship
 from db_connect import Base
+from models.user import Users
 
 
 class Incomes(Base):
@@ -8,3 +10,6 @@ class Incomes(Base):
     user_id = Column(Integer, nullable=False)
     price = Column(Numeric, nullable=False)
     date_receipt = Column(Date, nullable=False)
+
+    user = relationship(argument="Users", foreign_keys=[user_id],
+                        primaryjoin=lambda: Users.id == Incomes.user_id)

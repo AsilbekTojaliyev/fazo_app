@@ -2,20 +2,22 @@ import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
-from routes.user import users_router
+from routes.users import users_router
 from routes.login import login_router
-from routes.telephone import router_phones
-from routes.planshet import router_planshets
-from routes.laptop import router_laptops
-from routes.file import router_files
-from routes.category import router_category
-from routes.cart import router_carts
-from routes.like import router_likes
-from routes.buy import router_buy
-from routes.incomit import router_incomes
+from routes.phones import router_phones
+from routes.tablets import router_planshets
+from routes.laptops import router_laptops
+from routes.files import router_files
+from routes.categories import router_category
+from routes.carts import router_carts
+from routes.likes import router_likes
+from routes.buys import router_buy
+from routes.incomes import router_incomes
+from routes.main_page import router_main
 
 app = FastAPI(docs_url="/")
 
+app.include_router(router_main)
 app.include_router(login_router)
 app.include_router(users_router)
 app.include_router(router_category)

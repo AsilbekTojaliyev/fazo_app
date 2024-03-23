@@ -2,8 +2,8 @@ from sqlalchemy import Column, String, Integer, and_, Text
 from sqlalchemy.orm import relationship, backref
 from db_connect import Base
 from models.laptop import Laptops
-from models.planshet import Planshets
-from models.telephone import Telephones
+from models.tablet import Tablets
+from models.phone import Phones
 
 
 class Files(Base):
@@ -16,10 +16,10 @@ class Files(Base):
     laptop = relationship(argument="Laptops", foreign_keys=[source_id],
                           primaryjoin=lambda: and_(Laptops.id == Files.source_id, Files.source == "laptop"),
                           backref=backref("files"))
-    planshet = relationship(argument="Planshets", foreign_keys=[source_id],
-                            primaryjoin=lambda: and_(Planshets.id == Files.source_id, Files.source == "planshet"),
+    planshet = relationship(argument="Tablets", foreign_keys=[source_id],
+                            primaryjoin=lambda: and_(Tablets.id == Files.source_id, Files.source == "tablet"),
                             backref=backref("files"))
-    telephone = relationship(argument="Telephones", foreign_keys=[source_id],
-                             primaryjoin=lambda: and_(Telephones.id == Files.source_id, Files.source == "telephone"),
+    telephone = relationship(argument="Phones", foreign_keys=[source_id],
+                             primaryjoin=lambda: and_(Phones.id == Files.source_id, Files.source == "phone"),
                              backref=backref("files"))
 

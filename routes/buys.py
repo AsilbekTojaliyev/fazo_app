@@ -7,7 +7,7 @@ from models.buy import Buys
 from models.cart import Carts
 from models.incomit import Incomes
 from routes.login import get_current_user
-from schemas.user import CreateUser
+from schemas.users import CreateUser
 
 router_buy = APIRouter(prefix="/buys", tags=["Buys, operations"])
 
@@ -17,6 +17,22 @@ def get(db: Session = Depends(database), current_user: CreateUser = Depends(get_
     if current_user.role == "admin":
         return db.query(Buys).all()
     raise HTTPException(400, "buni faqat admin ko'ra oladi !!!")
+
+
+@router_buy.post("/create_for_user_buys")
+def create(address: str = None, phone: str = None, db: Session = Depends(database),
+           current_user: CreateUser = Depends(get_current_user)):
+    buy = db.query(Buys).filter(Buys.user_id == current_user.id).first()
+    if current_user.role == "user":
+        get_in_db(db, Buys, buy.id)
+        db.query(Buys).filter(Buys.id == buy.id).update({
+            Buys.address: address,
+            Buys.phone: phone
+        })
+        db.commit()
+    else:
+        raise HTTPException(400, "siz ro'yxatdan o'tmagansiz")
+    raise HTTPException(200, "amaliyot muvaffaqiyatli")
 
 
 @router_buy.put("/confirmation_buys")

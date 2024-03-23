@@ -4,9 +4,9 @@ from sqlalchemy.orm import Session
 from db_connect import database
 from models.incomit import Incomes
 from routes.login import get_current_user
-from schemas.user import CreateUser
+from schemas.users import CreateUser
 
-router_incomes = APIRouter(prefix="/incomes", tags=["incomes operations"])
+router_incomes = APIRouter(prefix="/Incomes", tags=["Incomes operations"])
 
 
 @router_incomes.get("/get_incomes")

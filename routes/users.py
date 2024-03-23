@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from functions.user import get_users, create_user_f, update_user_f, delete_user_f, create_admin_f
 from routes.login import get_current_active_user
-from schemas.user import CreateUser, UpdateUser
+from schemas.users import CreateUser, UpdateUser
 from db_connect import database
 
 
