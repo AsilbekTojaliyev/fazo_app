@@ -14,25 +14,20 @@ router_files = APIRouter(
 
 
 @router_files.post("/create_file")
-def create(
-        form: Create_file = Depends(Create_file),
-        db: Session = Depends(database),
+def create(form: Create_file = Depends(Create_file), db: Session = Depends(database),
         current_user: CreateUser = Depends(get_current_user)):
     create_file(form.new_files, form.source, form.source_id, db, current_user)
     raise HTTPException(200, "Amaliyot muvaffaqiyatli amalga oshirildi !!!")
 
 
 @router_files.put("/update_file")
-def update(
-        form: Create_file = Depends(Create_file),
-        db: Session = Depends(database),
+def update(form: Create_file = Depends(Create_file), db: Session = Depends(database),
         current_user: CreateUser = Depends(get_current_user)):
     update_file(form.new_files, form.source, form.source_id, db, current_user)
     raise HTTPException(200, "Amaliyot muvaffaqiyatli amalga oshirildi !!!")
 
 
 @router_files.delete("/delete_file")
-def delete(ident: int, db: Session = Depends(database),
-        current_user: CreateUser = Depends(get_current_user)):
+def delete(ident: int, db: Session = Depends(database), current_user: CreateUser = Depends(get_current_user)):
     delete_file(ident, db, current_user)
     raise HTTPException(200, "Amaliyot muvaffaqiyatli amalga oshirildi !!!")

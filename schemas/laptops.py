@@ -7,7 +7,7 @@ class Create_laptop(BaseModel):
     name: str
     price: float
     year: int = Field(..., gt=0)
-    brand: str
+    brand_id: int = Field(..., gt=0)
     screen_type: str
     weight: float
     country: str
@@ -27,9 +27,10 @@ class Update_laptop(BaseModel):
     ident: int = Field(..., gt=0)
     category_id: int = Field(..., gt=0)
     name: str
+    description: str
     price: float
     year: int = Field(..., gt=0)
-    brand: str
+    brand_id: int = Field(..., gt=0)
     screen_type: str
     weight: float
     country: str

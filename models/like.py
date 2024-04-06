@@ -14,16 +14,16 @@ class Likes(Base):
     source = Column(String(255), nullable=False)
     source_id = Column(Integer, nullable=False)
 
-    user = relationship(argument="Users", foreign_keys=[user_id],
+    user = relationship(argument="Users", foreign_keys=[user_id], viewonly=True,
                         primaryjoin=lambda: Users.id == Likes.user_id)
 
-    laptop = relationship(argument="Laptops", foreign_keys=[source_id],
+    laptop = relationship(argument="Laptops", foreign_keys=[source_id], viewonly=True,
                           primaryjoin=lambda: and_(Laptops.id == Likes.source_id, Likes.source == "laptop"),
                           backref=backref("likes"))
-    planshet = relationship(argument="Tablets", foreign_keys=[source_id],
+    tablet = relationship(argument="Tablets", foreign_keys=[source_id], viewonly=True,
                             primaryjoin=lambda: and_(Tablets.id == Likes.source_id, Likes.source == "tablet"),
                             backref=backref("likes"))
-    telephone = relationship(argument="Phones", foreign_keys=[source_id],
+    phone = relationship(argument="Phones", foreign_keys=[source_id], viewonly=True,
                             primaryjoin=lambda: and_(Phones.id == Likes.source_id, Likes.source == "phone"),
                             backref=backref("likes"))
 

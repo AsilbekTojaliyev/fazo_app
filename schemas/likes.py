@@ -4,8 +4,8 @@ from pydantic import BaseModel, Field
 
 class Source_type(str, Enum):
     laptop = "laptop"
-    planshet = "tablet"
-    telephone = "phone"
+    tablet = "tablet"
+    phone = "phone"
 
 
 class Create_like(BaseModel):

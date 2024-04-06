@@ -1,14 +1,11 @@
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, HTTPException
 from db_connect import database
-from functions.universal_functions import pagination
-from models.laptop import Laptops
 from typing import List
 from routes.login import get_current_active_user
 from schemas.laptops import Create_laptop, Update_laptop
 from functions.laptop import create_laptop, update_laptop, delete_laptop, get_laptop
 from schemas.users import CreateUser
-from sqlalchemy import func
 
 router_laptops = APIRouter(prefix="/Laptops", tags=["Laptops operations"])
 
@@ -23,9 +20,9 @@ def create(forms: List[Create_laptop],
 
 @router_laptops.get('/get_laptops')
 def get_filter(page: int = 1, limit: int = 25, rom_size: int = 0,
-               ram_size: int = 0, rom_type: str = None, price: float = 0, brand: str = None,
+               ram_size: int = 0, price: float = 0,
                country: str = None, db: Session = Depends(database)):
-    return get_laptop(price, country, rom_type, rom_size, ram_size,  brand, page, limit, db)
+    return get_laptop(price, country, rom_size, ram_size, page, limit, db)
 
 
 @router_laptops.put('/update_laptops')

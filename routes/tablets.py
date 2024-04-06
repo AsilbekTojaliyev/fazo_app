@@ -7,7 +7,7 @@ from schemas.tablets import Create_tablet, Update_tablet
 from functions.tablet import create_tablet, update_tablet, delete_tablet, get_tablet
 from schemas.users import CreateUser
 
-router_planshets = APIRouter(prefix="/tablets", tags=["Tablets operations"])
+router_planshets = APIRouter(prefix="/Tablets", tags=["Tablets operations"])
 
 
 @router_planshets.post('/create_tablets')
@@ -20,8 +20,8 @@ def create(forms: List[Create_tablet],
 
 @router_planshets.get('/get_tablets')
 def get(page: int = 1, limit: int = 25, rom_size: int = 0, ram_size: int = 0,
-        price: int = 0, brand: str = None, country: str = None, db: Session = Depends(database)):
-    return get_tablet(price, country, rom_size, ram_size, brand, page, limit, db)
+        price: int = 0, country: str = None, db: Session = Depends(database)):
+    return get_tablet(price, country, rom_size, ram_size, page, limit, db)
 
 
 @router_planshets.put('/update_tablets')

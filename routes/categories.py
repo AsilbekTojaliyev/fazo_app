@@ -23,16 +23,6 @@ def create(forms: List[Create_category], db: Session = Depends(database),
 
 @router_category.get("/get_categories")
 def get(db: Session = Depends(database)):
-    db.query(Categories).filter(Categories.name == "kompyuterlar").update({
-        Categories.link: "/Laptops/get_filter_laptops"
-    })
-    db.query(Categories).filter(Categories.name == "planshetlar").update({
-        Categories.link: "/Tablets/get_filter_planshets"
-    })
-    db.query(Categories).filter(Categories.name == "telefonlar").update({
-        Categories.link: "/Phones/get_filter_telephones"
-    })
-    db.commit()
     return db.query(Categories).all()
 
 

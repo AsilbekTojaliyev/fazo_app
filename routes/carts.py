@@ -1,44 +1,66 @@
+from datetime import date
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from db_connect import database
-from functions.cart import create_cart, delete_cart
-from models.buy import Buys
+from functions.universal_functions import get_in_db, new_item_db, product_reduction
 from models.cart import Carts
+from models.trade import Trades
+from models.incomit import Incomes
 from routes.login import get_current_user
-from schemas.carts import Create_cart
 from schemas.users import CreateUser
 
-router_carts = APIRouter(
-    prefix="/carts",
-    tags=["Carts operations"]
-)
+router_carts = APIRouter(prefix="/cart", tags=["Carts operations"])
 
-
-@router_carts.get("/get_all_carts")
-def get_all(db: Session = Depends(database), current_user: CreateUser = Depends(get_current_user)):
-    if current_user.role == "admin":
-        return db.query(Carts).all()
-    else:
-        raise HTTPException(400, "siz buni ko'ra olmaysiz, chunki siz admin emassiz")
-    
 
 @router_carts.get("/get_carts")
 def get(db: Session = Depends(database), current_user: CreateUser = Depends(get_current_user)):
-    buy = db.query(Buys).filter(Buys.user_id == current_user.id).first()
-    if buy is not None:
-        return db.query(Carts).filter(Carts.buy_id == buy.id).all()
-    raise HTTPException(400, "siz hali savatga malumot qowmadingiz")
+    if current_user.role == "admin":
+        return db.query(Carts).options(joinedload(Carts.user)).all()
+    raise HTTPException(400, "buni faqat admin ko'ra oladi !!!")
 
 
-@router_carts.post("/create_carts")
-def create(form: Create_cart = Depends(Create_cart), db: Session = Depends(database),
+@router_carts.post("/create_for_user_carts")
+def create(address: str = None, phone: str = None, db: Session = Depends(database),
            current_user: CreateUser = Depends(get_current_user)):
-    create_cart(form.source, form.source_id, current_user, db)
-    raise HTTPException(200, "Amaliyot muvaffaqiyatli amalga oshirildi")
+    cart = db.query(Carts).filter(Carts.user_id == current_user.id).first()
+    if current_user.role == "user":
+        get_in_db(db, Carts, cart.id)
+        db.query(Carts).filter(Carts.id == cart.id).update({
+            Carts.address: address,
+            Carts.phone: phone
+        })
+        db.commit()
+    else:
+        raise HTTPException(400, "siz ro'yxatdan o'tmagansiz")
+    raise HTTPException(200, "amaliyot muvaffaqiyatli")
 
 
-@router_carts.delete("/delete_carts")
-def delete(ident: int = 0, db: Session = Depends(database),
-           current_user: CreateUser = Depends(get_current_user)):
-    delete_cart(ident, current_user, db)
-    raise HTTPException(200, "Amaliyot muvaffaqiyatli amalga oshirildi")
+@router_carts.put("/confirmation_carts")
+def confirmation(ident: int, status: bool,
+                 db: Session = Depends(database), current_user: CreateUser = Depends(get_current_user)):
+    if current_user.role == "admin":
+        get_in_db(db, Carts, ident)
+        db.query(Carts).filter(Carts.id == ident).update({
+            Carts.status: status
+        })
+        db.commit()
+        cart = db.query(Carts).filter(Carts.id == ident).first()
+        price_all = 0
+        trades = db.query(Trades).filter(Trades.cart_id == Carts.id).all()
+        if cart.status:
+            for trade in trades:
+                price_all += trade.price_source
+                product_reduction(trade, db)
+                db.query(Trades).filter(Trades.id == trade.id).delete()
+                db.commit()
+            
+            new_incomit = Incomes(
+                    user_id=cart.user_id,
+                    price=price_all,
+                    date_receipt=date.today()
+                )
+            new_item_db(db, new_incomit)
+
+        raise HTTPException(200, "amaliyot muvaffaqiyatli")
+
+    raise HTTPException(400, "faqat admin yangilay oladi !!!")

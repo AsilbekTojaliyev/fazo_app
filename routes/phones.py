@@ -7,7 +7,7 @@ from schemas.phones import Create_phone, Update_phone
 from functions.phone import create_phone, update_phone, delete_phone, get_phone
 from schemas.users import CreateUser
 
-router_phones = APIRouter(prefix="/phones", tags=["Phones operations"])
+router_phones = APIRouter(prefix="/Phones", tags=["Phones operations"])
 
 
 @router_phones.post('/create_phones')
@@ -19,10 +19,10 @@ def create(forms: List[Create_phone],
 
 
 @router_phones.get('/get_phones')
-def get(country: str = None, brand: str = None, price: int = 0,
+def get(country: str = None, price: int = 0,
         ram_size: int = 0, rom_size: int = 0,
         page: int = 1, limit: int = 25, db: Session = Depends(database)):
-    return get_phone(country, price, rom_size, ram_size, brand, page, limit, db)
+    return get_phone(country, price, rom_size, ram_size, page, limit, db)
 
 
 @router_phones.put('/update_phones')

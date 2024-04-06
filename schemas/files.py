@@ -6,8 +6,9 @@ from pydantic import BaseModel, Field
 
 class Source_type(str, Enum):
     laptop = "laptop"
-    planshet = "tablet"
-    telephone = "phone"
+    tablet = "tablet"
+    phone = "phone"
+    brand = "brand"
 
 
 class Create_file(BaseModel):

@@ -9,11 +9,12 @@ from routes.tablets import router_planshets
 from routes.laptops import router_laptops
 from routes.files import router_files
 from routes.categories import router_category
-from routes.carts import router_carts
+from routes.trades import router_trades
 from routes.likes import router_likes
-from routes.buys import router_buy
+from routes.carts import router_carts
 from routes.incomes import router_incomes
 from routes.main_page import router_main
+from routes.brands import router_brands
 
 app = FastAPI(docs_url="/")
 
@@ -21,14 +22,15 @@ app.include_router(router_main)
 app.include_router(login_router)
 app.include_router(users_router)
 app.include_router(router_category)
+app.include_router(router_brands)
 app.include_router(router_laptops)
 app.include_router(router_planshets)
 app.include_router(router_phones)
-app.include_router(router_files)
 app.include_router(router_likes)
 app.include_router(router_carts)
-app.include_router(router_buy)
+app.include_router(router_trades)
 app.include_router(router_incomes)
+app.include_router(router_files)
 
 app.add_middleware(
     CORSMiddleware,

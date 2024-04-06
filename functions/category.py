@@ -8,7 +8,7 @@ def create_category(db, forms, user):
         for form in forms:
             new_db = Categories(
                 name=form.name,
-                link=None
+                link=form.link
             )
             new_item_db(db, new_db)
     else:
@@ -20,7 +20,8 @@ def update_category(db, forms, user):
         for form in forms:
             get_in_db(db, Categories, form.ident)
             db.query(Categories).filter(Categories.id == form.ident).update({
-                Categories.name: form.name
+                Categories.name: form.name,
+                Categories.link: form.link
             })
         db.commit()
     else:

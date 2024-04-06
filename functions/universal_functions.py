@@ -1,26 +1,38 @@
 import math
 from fastapi import HTTPException
-from models.cart import Carts
+from models.trade import Trades
 from models.laptop import Laptops
 from models.tablet import Tablets
 from models.phone import Phones
 
 
-def product_reduction(cart, db):
-    if cart.source == "laptop" and db.query(Laptops).filter(Laptops.id == cart.source_id).first() is not None:
-        db.query(Laptops).filter(Laptops.id == cart.source_id).update({
-            Laptops.count: Laptops.count - cart.amount
-        })
+def most_viewed(source, source_id, db):
+    if source == "laptop" and db.query(Laptops).filter(Laptops.id == source_id).first() is not None:
+        db.query(Laptops).filter(Laptops.id == source_id).update({
+            Laptops.see_num: Laptops.see_num + 1})
         db.commit()
-    elif cart.source == "planshet" and db.query(Tablets).filter(Tablets.id == cart.source_id).first() is not None:
-        db.query(Tablets).filter(Tablets.id == cart.source_id).update({
-            Tablets.count: Tablets.count - cart.amount
-        })
+    elif source == "tablet" and db.query(Tablets).filter(Tablets.id == source_id).first() is not None:
+        db.query(Tablets).filter(Tablets.id == source_id).update({
+            Tablets.see_num: Tablets.see_num + 1})
         db.commit()
-    elif cart.source == "telephone" and db.query(Phones).filter(Phones.id == cart.source_id).first() is not None:
-        db.query(Phones).filter(Phones.id == cart.source_id).update({
-            Phones.count: Phones.count - cart.amount
-        })
+    elif source == "phone" and db.query(Phones).filter(Phones.id == source_id).first() is not None:
+        db.query(Phones).filter(Phones.id == source_id).update({
+            Phones.see_num: Phones.see_num + 1})
+        db.commit()
+
+
+def product_reduction(trade, db):
+    if trade.source == "laptop" and db.query(Laptops).filter(Laptops.id == trade.source_id).first() is not None:
+        db.query(Laptops).filter(Laptops.id == trade.source_id).update({
+            Laptops.count: Laptops.count - trade.amount})
+        db.commit()
+    elif trade.source == "tablet" and db.query(Tablets).filter(Tablets.id == trade.source_id).first() is not None:
+        db.query(Tablets).filter(Tablets.id == trade.source_id).update({
+            Tablets.count: Tablets.count - trade.amount})
+        db.commit()
+    elif trade.source == "phone" and db.query(Phones).filter(Phones.id == trade.source_id).first() is not None:
+        db.query(Phones).filter(Phones.id == trade.source_id).update({
+            Phones.count: Phones.count - trade.amount})
         db.commit()
 
 
@@ -33,18 +45,8 @@ def new_item_db(db, a):
 def get_in_db(db, model, ident=int):
     text = db.query(model).filter(model.id == ident).first()
     if text is None:
-        raise HTTPException(400, f"No information found from {model}!")
+        raise HTTPException(400, f"{model} dan ma'lumot topilmadi!")
     return text
-
-
-def pagination(form, page, limit):
-    if page < 0 or limit < 0:
-        raise HTTPException(status_code=400, detail="page yoki limit 0 dan kichik kiritilmasligi kerak")
-    elif page and limit:
-        return {"current_page": page, "limit": limit, "pages": math.ceil(form.count() / limit),
-                "data": form.offset((page - 1) * limit).limit(limit).all()}
-    else:
-        return {"data": form.all()}
 
 
 def pagination_search(form, page, limit):
@@ -57,23 +59,24 @@ def pagination_search(form, page, limit):
         return {"data": form}
 
 
-def cart_buy_create(source, source_id, buy, db):
-    if source == "laptop" and db.query(Laptops).filter(Laptops.id == source_id).first() is not None:
-        x = db.query(Carts).filter(
-            Carts.buy_id == buy.id,
-            Carts.source == source,
-            Carts.source_id == source_id).first()
-        laptop = db.query(Laptops).filter(Laptops.id == source_id).first()
+def trade_create(source, source_id, cart, db):
+    x = db.query(Trades).filter(
+        Trades.cart_id == cart.id,
+        Trades.source == source,
+        Trades.source_id == source_id).first()
 
+    if source == "laptop" and db.query(Laptops).filter(Laptops.id == source_id).first() is not None:
+        laptop = db.query(Laptops).filter(Laptops.id == source_id).first()
         if x is not None:
-            db.query(Carts).filter(Carts.source_id == source_id, Carts.source == "laptop").update({
-                Carts.amount: Carts.amount + 1,
-                Carts.price_source: Carts.price_source + laptop.discount_price
+            db.query(Trades).filter(Trades.source_id == source_id, Trades.source == "laptop").update({
+                Trades.amount: Trades.amount + 1,
+                Trades.price_source: Trades.price_source + laptop.discount_price
             })
             db.commit()
+            raise HTTPException(200, "siz bu mahsulotni qayta qo'shdingiz")
         else:
-            new_db = Carts(
-                buy_id=buy.id,
+            new_db = Trades(
+                cart_id=cart.id,
                 source=source,
                 source_id=source_id,
                 amount=1,
@@ -82,44 +85,38 @@ def cart_buy_create(source, source_id, buy, db):
             )
             new_item_db(db, new_db)
 
-    elif source == "planshet" and db.query(Tablets).filter(Tablets.id == source_id).first() is not None:
-        x = db.query(Carts).filter(
-            Carts.buy_id == buy.id,
-            Carts.source == source,
-            Carts.source_id == source_id).first()
-        planshet = db.query(Tablets).filter(Tablets.id == source_id).first()
+    elif source == "tablet" and db.query(Tablets).filter(Tablets.id == source_id).first() is not None:
+        tablet = db.query(Tablets).filter(Tablets.id == source_id).first()
         if x is not None:
-            db.query(Carts).filter(Carts.source_id == source_id, Carts.source == "planshet").update({
-                Carts.amount: Carts.amount + 1,
-                Carts.price_source: Carts.price_source + planshet.discount_price
+            db.query(Trades).filter(Trades.source_id == source_id, Trades.source == "tablet").update({
+                Trades.amount: Trades.amount + 1,
+                Trades.price_source: Trades.price_source + tablet.discount_price
             })
             db.commit()
+            raise HTTPException(200, "siz bu mahsulotni qayta qo'shdingiz")
         else:
-            new_db = Carts(
-                buy_id=buy.id,
+            new_db = Trades(
+                cart_id=cart.id,
                 source=source,
                 source_id=source_id,
                 amount=1,
-                price_one=planshet.discount_price,
-                price_source=planshet.discount_price
+                price_one=tablet.discount_price,
+                price_source=tablet.discount_price
             )
             new_item_db(db, new_db)
 
-    elif source == "telephone" and db.query(Phones).filter(Phones.id == source_id).first() is not None:
-        x = db.query(Carts).filter(
-            Carts.buy_id == buy.id,
-            Carts.source == source,
-            Carts.source_id == source_id).first()
+    elif source == "phone" and db.query(Phones).filter(Phones.id == source_id).first() is not None:
         phone = db.query(Phones).filter(Phones.id == source_id).first()
         if x is not None:
-            db.query(Carts).filter(Carts.source_id == source_id, Carts.source == "telephone").update({
-                Carts.amount: Carts.amount + 1,
-                Carts.price_source: Carts.price_source + phone.discount_price
+            db.query(Trades).filter(Trades.source_id == source_id, Trades.source == "phone").update({
+                Trades.amount: Trades.amount + 1,
+                Trades.price_source: Trades.price_source + phone.discount_price
             })
             db.commit()
+            raise HTTPException(200, "siz bu mahsulotni qayta qo'shdingiz")
         else:
-            new_db = Carts(
-                buy_id=buy.id,
+            new_db = Trades(
+                cart_id=cart.id,
                 source=source,
                 source_id=source_id,
                 amount=1,
@@ -129,3 +126,13 @@ def cart_buy_create(source, source_id, buy, db):
             new_item_db(db, new_db)
     else:
         raise HTTPException(400, "biriktirilgan malumot topilmadi")
+
+
+# def pagination(form, page, limit):
+#     if page < 0 or limit < 0:
+#         raise HTTPException(status_code=400, detail="page yoki limit 0 dan kichik kiritilmasligi kerak")
+#     elif page and limit:
+#         return {"current_page": page, "limit": limit, "pages": math.ceil(form.count() / limit),
+#                 "data": form.offset((page - 1) * limit).limit(limit).all()}
+#     else:
+#         return {"data": form.all()}
