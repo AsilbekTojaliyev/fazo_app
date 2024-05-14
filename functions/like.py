@@ -1,4 +1,4 @@
-from functions.universal_functions import get_in_db, new_item_db, most_viewed
+from functions.universal_functions import new_item_db
 from models.laptop import Laptops
 from models.like import Likes
 from models.tablet import Tablets
@@ -7,8 +7,6 @@ from fastapi import HTTPException
 
 
 def create_like(source, source_id, db, user):
-    most_viewed(source, source_id, db)
-
     if ((source == "laptop" and db.query(Laptops).filter(Laptops.id == source_id).first() is None) or
             (source == "tablet" and db.query(Tablets).filter(Tablets.id == source_id).first() is None) or
             (source == "phone" and db.query(Phones).filter(Phones.id == source_id).first() is None)):
@@ -21,6 +19,18 @@ def create_like(source, source_id, db, user):
 
     if x is not None:
         raise HTTPException(400, "bu ma'lumot saralanganlarda mavjud")
+
+    db.query(Laptops).filter(Laptops.name == source and Laptops.id == source_id).update({
+        Laptops.favorite: Laptops.favorite + 1})
+    db.commit()
+
+    db.query(Tablets).filter(Tablets.name == source and Tablets.id == source_id).update({
+        Tablets.favorite: Tablets.favorite + 1})
+    db.commit()
+
+    db.query(Phones).filter(Phones.name == source and Phones.id == source_id).update({
+        Phones.favorite: Phones.favorite + 1})
+    db.commit()
 
     new_db = Likes(
         user_id=user.id,

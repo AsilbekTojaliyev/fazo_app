@@ -19,9 +19,9 @@ def create(forms: List[Create_tablet],
 
 
 @router_planshets.get('/get_tablets')
-def get(page: int = 1, limit: int = 25, rom_size: int = 0, ram_size: int = 0,
+def get(page: int = 1, limit: int = 25, rom_size: int = 0, ram_size: int = 0, brand: str = None,
         price: int = 0, country: str = None, db: Session = Depends(database)):
-    return get_tablet(price, country, rom_size, ram_size, page, limit, db)
+    return get_tablet(price, brand, country, rom_size, ram_size, page, limit, db)
 
 
 @router_planshets.put('/update_tablets')

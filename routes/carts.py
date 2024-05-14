@@ -19,22 +19,6 @@ def get(db: Session = Depends(database), current_user: CreateUser = Depends(get_
     raise HTTPException(400, "buni faqat admin ko'ra oladi !!!")
 
 
-@router_carts.post("/create_for_user_carts")
-def create(address: str = None, phone: str = None, db: Session = Depends(database),
-           current_user: CreateUser = Depends(get_current_user)):
-    cart = db.query(Carts).filter(Carts.user_id == current_user.id).first()
-    if current_user.role == "user":
-        get_in_db(db, Carts, cart.id)
-        db.query(Carts).filter(Carts.id == cart.id).update({
-            Carts.address: address,
-            Carts.phone: phone
-        })
-        db.commit()
-    else:
-        raise HTTPException(400, "siz ro'yxatdan o'tmagansiz")
-    raise HTTPException(200, "amaliyot muvaffaqiyatli")
-
-
 @router_carts.put("/confirmation_carts")
 def confirmation(ident: int, status: bool,
                  db: Session = Depends(database), current_user: CreateUser = Depends(get_current_user)):

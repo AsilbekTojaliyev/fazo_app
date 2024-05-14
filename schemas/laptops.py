@@ -3,11 +3,10 @@ from datetime import date
 
 
 class Create_laptop(BaseModel):
-    category_id: int = Field(..., gt=0)
-    name: str
+    description: str
     price: float
     year: int = Field(..., gt=0)
-    brand_id: int = Field(..., gt=0)
+    brand: str
     screen_type: str
     weight: float
     country: str
@@ -25,12 +24,10 @@ class Create_laptop(BaseModel):
 
 class Update_laptop(BaseModel):
     ident: int = Field(..., gt=0)
-    category_id: int = Field(..., gt=0)
-    name: str
     description: str
     price: float
     year: int = Field(..., gt=0)
-    brand_id: int = Field(..., gt=0)
+    brand: str
     screen_type: str
     weight: float
     country: str

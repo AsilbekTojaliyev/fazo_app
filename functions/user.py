@@ -23,6 +23,8 @@ def create_user_f(form, db):
 
 
 def update_user_f(form, db, user):
+    if db.query(Users).filter(Users.username == form.username).all() and user.username != form.username:
+        raise HTTPException(400, "user bazada mavjud!!!")
     if user.role == "user":
         db.query(Users).filter(Users.id == user.id).update({
             Users.name: form.name,

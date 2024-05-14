@@ -1,7 +1,6 @@
 from sqlalchemy import Column, String, Integer, and_, Text
 from sqlalchemy.orm import relationship, backref
 from db_connect import Base
-from models.brand import Brands
 from models.laptop import Laptops
 from models.tablet import Tablets
 from models.phone import Phones
@@ -23,7 +22,3 @@ class Files(Base):
     phone = relationship(argument="Phones", foreign_keys=[source_id], viewonly=True,
                          primaryjoin=lambda: and_(Phones.id == Files.source_id, Files.source == "phone"),
                          backref=backref("files"))
-    brand = relationship(argument="Brands", foreign_keys=[source_id], viewonly=True,
-                         primaryjoin=lambda: and_(Brands.id == Files.source_id, Files.source == "brand"),
-                         backref=backref("files"))
-

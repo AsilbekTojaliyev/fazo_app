@@ -33,6 +33,7 @@ class CreateUser(BaseModel):
         if len(password) < 8:
             raise HTTPException(400, 'Password should not be less than 8 characters')
         return password
+# 1
 
 
 class UpdateUser(BaseModel):
@@ -46,16 +47,6 @@ class UpdateUser(BaseModel):
         if len(num) < 9:
             raise HTTPException(400, "telefon raqam 9 ta belgidan kam bo'lmasligi kerak")
         return num
-
-    @validator('username')
-    def username_validate(cls, username):
-        validate_my = db.query(Users).filter(
-            Users.username == username,
-        ).count()
-
-        if validate_my != 0:
-            raise HTTPException(400, 'This login has already been registered !!!')
-        return username
 
     @validator('password')
     def password_validate(cls, password):

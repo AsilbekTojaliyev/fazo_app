@@ -20,9 +20,9 @@ def create(forms: List[Create_laptop],
 
 @router_laptops.get('/get_laptops')
 def get_filter(page: int = 1, limit: int = 25, rom_size: int = 0,
-               ram_size: int = 0, price: float = 0,
+               ram_size: int = 0, price: float = 0, brand: str = None,
                country: str = None, db: Session = Depends(database)):
-    return get_laptop(price, country, rom_size, ram_size, page, limit, db)
+    return get_laptop(price, brand, country, rom_size, ram_size, page, limit, db)
 
 
 @router_laptops.put('/update_laptops')

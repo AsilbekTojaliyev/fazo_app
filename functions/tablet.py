@@ -1,12 +1,19 @@
 import random
 from fastapi import HTTPException
+from sqlalchemy import desc
 from sqlalchemy.orm import joinedload
 from functions.universal_functions import get_in_db, new_item_db, pagination_search
 from models.category import Categories
 from models.tablet import Tablets
 
 
-def get_tablet(price, country, rom_size, ram_size, page, limit, db):
+def get_tablet(price, brand, country, rom_size, ram_size, page, limit, db):
+    if brand:
+        brand_formatted = "%{}%".format(brand)
+        brand_filter = Tablets.brand.like(brand_formatted)
+    else:
+        brand_filter = Tablets.id > 0
+
     if country:
         country_formatted = "%{}%".format(country)
         country_filter = (Tablets.country.like(country_formatted))
@@ -28,23 +35,21 @@ def get_tablet(price, country, rom_size, ram_size, page, limit, db):
     else:
         ram_size_filter = Tablets.id > 0
 
-    items = db.query(Tablets).options(
-        joinedload(Tablets.files), joinedload(Tablets.category)).filter(
-        country_filter, price_filter,
-        ram_size_filter, rom_size_filter).all()
+    items = db.query(Tablets).options(joinedload(Tablets.files)).filter(
+        country_filter, price_filter, brand_filter, ram_size_filter, rom_size_filter).order_by(desc(Tablets.id)).all()
     random.shuffle(items)
     return pagination_search(items, page, limit)
 
 
 def create_tablet(db, forms, user):
+    category = db.query(Categories).filter(Categories.name == "planshetlar").first()
     if user.role == "admin":
         for form in forms:
-            get_in_db(db, Categories, form.category_id)
             discount_price = form.price - (form.price * form.discount)/100
             new_add = Tablets(
-                name=form.name,
-                description="tablet",
-                category_id=form.category_id,
+                name="tablet",
+                description=form.description,
+                category_id=category.id,
                 price=form.price,
                 color=form.color,
                 weight=form.weight,
@@ -52,7 +57,7 @@ def create_tablet(db, forms, user):
                 year=form.year,
                 rom_size=form.rom_size,
                 ram_size=form.ram_size,
-                brand_id=form.brand_id,
+                brand=form.brand,
                 screen_type=form.screen_type,
                 display=form.display,
                 camera=form.camera,
@@ -61,7 +66,8 @@ def create_tablet(db, forms, user):
                 discount_price=discount_price,
                 discount_time=form.discount_time,
                 count=form.count,
-                see_num=0
+                see_num=0,
+                favorite=0
             )
             new_item_db(db, new_add)
     else:
@@ -72,13 +78,10 @@ def update_tablet(db, forms, user):
     if user.role == "admin":
         for form in forms:
             get_in_db(db, Tablets, form.ident)
-            get_in_db(db, Categories, form.category_id)
             discount_price = form.price - (form.price * form.discount)/100
             db.query(Tablets).filter(Tablets.id == form.ident).update({
-                Tablets.category_id: form.category_id,
-                Tablets.name: form.name,
                 Tablets.description: form.description,
-                Tablets.brand_id: form.brand_id,
+                Tablets.brand: form.brand,
                 Tablets.screen_type: form.screen_type,
                 Tablets.year: form.year,
                 Tablets.price: form.price,

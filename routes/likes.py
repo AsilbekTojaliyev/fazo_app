@@ -1,4 +1,7 @@
+import random
+
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import desc
 from sqlalchemy.orm import Session, joinedload
 from db_connect import database
 from functions.like import create_like, delete_like
@@ -16,30 +19,33 @@ router_likes = APIRouter(
 )
 
 
-@router_likes.get("/get_for_admin")
-def get(db: Session = Depends(database), current_user: CreateUser = Depends(get_current_user)):
-    if current_user.role == "admin":
-        return db.query(Likes).all()
-    else:
-        raise HTTPException(400, "sizga mumkin emas")
-
-
 @router_likes.get("/get_likes")
+def get_likes(db: Session = Depends(database), current_user: CreateUser = Depends(get_current_user)):
+    return db.query(Likes).filter(Likes.user_id == current_user.id).order_by(desc(Likes.id)).all()
+
+
+@router_likes.get("/get_likes_product")
 def get(db: Session = Depends(database), current_user: CreateUser = Depends(get_current_user)):
-    result = db.query(Laptops).options(joinedload(Laptops.files)).filter(
-        current_user.id == Likes.user_id, Laptops.id == Likes.source_id, Likes.source == "laptop").all()
-    result += db.query(Tablets).options(joinedload(Tablets.files)).filter(
-        current_user.id == Likes.user_id, Tablets.id == Likes.source_id, Likes.source == "tablet").all()
-    result += db.query(Phones).options(joinedload(Phones.files)).filter(
-        current_user.id == Likes.user_id, Phones.id == Likes.source_id, Likes.source == "phone").all()
-    return result
+    user_likes = db.query(Likes).filter(Likes.user_id == current_user.id).all()
+    products = []
+    for like in user_likes:
+        products += db.query(Laptops).options(joinedload(Laptops.files)).filter(
+            Laptops.name == like.source, Laptops.id == like.source_id).all()
+
+        products += db.query(Tablets).options(joinedload(Tablets.files)).filter(
+            Tablets.name == like.source, Tablets.id == like.source_id).all()
+
+        products += db.query(Phones).options(joinedload(Phones.files)).filter(
+            Phones.name == like.source, Phones.id == like.source_id).all()
+    random.shuffle(products)
+    return products
 
 
 @router_likes.post("/create_likes")
 def create(form: Create_like = Depends(Create_like), db: Session = Depends(database),
            current_user: CreateUser = Depends(get_current_user)):
     create_like(form.source, form.source_id, db, current_user)
-    raise HTTPException(200, "Amaliyot muvaffaqiyatli amalga oshirildi")
+    raise HTTPException(200, "amaliyot muvaffaqqiyatli")
 
 
 @router_likes.delete("/delete_likes")

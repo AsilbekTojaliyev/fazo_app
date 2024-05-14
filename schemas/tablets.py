@@ -3,9 +3,8 @@ from pydantic import BaseModel, Field
 
 
 class Create_tablet(BaseModel):
-    name: str
-    category_id: int = Field(..., gt=0)
-    brand_id: int = Field(..., gt=0)
+    description: str
+    brand: str
     screen_type: str
     color: str
     year: int = Field(..., gt=0)
@@ -24,10 +23,8 @@ class Create_tablet(BaseModel):
 
 class Update_tablet(BaseModel):
     ident: int = Field(..., gt=0)
-    name: str
     description: str
-    category_id: int = Field(..., gt=0)
-    brand_id: int = Field(..., gt=0)
+    brand: str
     screen_type: str
     year: int = Field(..., gt=0)
     weight: float

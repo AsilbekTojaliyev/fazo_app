@@ -1,6 +1,5 @@
 import os
 from functions.universal_functions import get_in_db
-from models.brand import Brands
 from models.file import Files
 from models.laptop import Laptops
 from models.tablet import Tablets
@@ -12,8 +11,7 @@ def create_file(new_files, source, source_id, db, user):
     if user.role == "admin":
         if (source == "laptop" and db.query(Laptops).filter(Laptops.id == source_id).first() is None) or \
                 (source == "tablet" and db.query(Tablets).filter(Tablets.id == source_id).first() is None) or \
-                (source == "phone" and db.query(Phones).filter(Phones.id == source_id).first() is None) or \
-                (source == "brand" and db.query(Brands).filter(Brands.id == source_id).first() is None):
+                (source == "phone" and db.query(Phones).filter(Phones.id == source_id).first() is None):
             raise HTTPException(400, "Fayl biriktiriladigan ma'lumot topilmadi !!!")
         uploaded_file_objects = []
         for new_file in new_files:
@@ -50,7 +48,7 @@ def update_file(new_files, source, source_id, db, user):
         items = db.query(Files).filter(Files.source == source,
                                        Files.source_id == source_id).all()
         for item in items:
-            delete_file(item.id, db)
-        create_file(new_files, source, source_id, db)
+            delete_file(item.id, db, user)
+        create_file(new_files, source, source_id, db, user)
     else:
         raise HTTPException(400, "Siz yangilayolmaysiz !!!")

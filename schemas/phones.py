@@ -3,9 +3,8 @@ from pydantic import BaseModel, Field
 
 
 class Create_phone(BaseModel):
-    name: str
-    category_id: int = Field(..., gt=0)
-    brand_id: int = Field(..., gt=0)
+    description: str
+    brand: str
     year: int = Field(..., gt=0)
     country: str
     model: str
@@ -25,14 +24,12 @@ class Create_phone(BaseModel):
 
 class Update_phone(BaseModel):
     ident: int = Field(..., gt=0)
-    category_id: int = Field(..., gt=0)
     year: int = Field(..., gt=0)
     weight: float
     country: str
-    name: str
     description: str
     price: float = Field(..., gt=0)
-    brand_id: int = Field(..., gt=0)
+    brand: str
     model: str
     ram_size: int = Field(..., gt=0)
     rom_size: int = Field(..., gt=0)

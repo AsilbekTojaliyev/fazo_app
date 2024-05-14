@@ -19,10 +19,10 @@ def create(forms: List[Create_phone],
 
 
 @router_phones.get('/get_phones')
-def get(country: str = None, price: int = 0,
+def get(country: str = None, price: int = 0, brand: str = None,
         ram_size: int = 0, rom_size: int = 0,
         page: int = 1, limit: int = 25, db: Session = Depends(database)):
-    return get_phone(country, price, rom_size, ram_size, page, limit, db)
+    return get_phone(brand, country, price, rom_size, ram_size, page, limit, db)
 
 
 @router_phones.put('/update_phones')

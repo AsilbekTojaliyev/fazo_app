@@ -8,7 +8,6 @@ class Source_type(str, Enum):
     laptop = "laptop"
     tablet = "tablet"
     phone = "phone"
-    brand = "brand"
 
 
 class Create_file(BaseModel):
